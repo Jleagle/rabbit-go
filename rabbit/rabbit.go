@@ -77,13 +77,13 @@ type Rabbit struct {
 	Password string
 }
 
-func (r Rabbit) GetOverview(lengthsAge int, lengthsIncr int, msgRatesAge int, msgRatesIncr int) (resp Overview, err error) {
+func (r Rabbit) GetOverview(payload Payload) (resp Overview, err error) {
 
 	values := url.Values{}
-	values.Set("lengths_age", strconv.Itoa(lengthsAge))
-	values.Set("lengths_incr", strconv.Itoa(lengthsIncr))
-	values.Set("msg_rates_age", strconv.Itoa(msgRatesAge))
-	values.Set("msg_rates_incr", strconv.Itoa(msgRatesIncr))
+	values.Set("lengths_age", strconv.Itoa(payload.LengthsAge))
+	values.Set("lengths_incr", strconv.Itoa(payload.LengthsIncr))
+	values.Set("msg_rates_age", strconv.Itoa(payload.MsgRatesAge))
+	values.Set("msg_rates_incr", strconv.Itoa(payload.MsgRatesIncr))
 
 	req, err := http.NewRequest("GET", "http://"+r.Host+":"+r.Port+"/api/overview?"+values.Encode(), nil)
 	req.SetBasicAuth(r.Username, r.Password)
@@ -123,17 +123,17 @@ func (r Rabbit) GetOverview(lengthsAge int, lengthsIncr int, msgRatesAge int, ms
 	return resp, nil
 }
 
-func (r Rabbit) GetQueue(queueName string, lengthsAge int, lengthsIncr int, msgRatesAge int, msgRatesIncr int, dataRatesAge int, dataRatesIncr int) (resp Queue, err error) {
+func (r Rabbit) GetQueue(queue string, payload Payload) (resp Queue, err error) {
 
 	values := url.Values{}
-	values.Set("lengths_age", strconv.Itoa(lengthsAge))
-	values.Set("lengths_incr", strconv.Itoa(lengthsIncr))
-	values.Set("msg_rates_age", strconv.Itoa(msgRatesAge))
-	values.Set("msg_rates_incr", strconv.Itoa(msgRatesIncr))
-	values.Set("data_rates_age", strconv.Itoa(dataRatesAge))
-	values.Set("data_rates_incr", strconv.Itoa(dataRatesIncr))
+	values.Set("lengths_age", strconv.Itoa(payload.LengthsAge))
+	values.Set("lengths_incr", strconv.Itoa(payload.LengthsIncr))
+	values.Set("msg_rates_age", strconv.Itoa(payload.MsgRatesAge))
+	values.Set("msg_rates_incr", strconv.Itoa(payload.MsgRatesIncr))
+	values.Set("data_rates_age", strconv.Itoa(payload.DataRatesAge))
+	values.Set("data_rates_incr", strconv.Itoa(payload.DataRatesIncr))
 
-	req, err := http.NewRequest("GET", "http://"+r.Host+":"+r.Port+"/api/queues/%2F/"+queueName+"?"+values.Encode(), nil)
+	req, err := http.NewRequest("GET", "http://"+r.Host+":"+r.Port+"/api/queues/%2F/"+queue+"?"+values.Encode(), nil)
 	req.SetBasicAuth(r.Username, r.Password)
 
 	client := &http.Client{}
