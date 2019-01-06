@@ -79,6 +79,8 @@ type Rabbit struct {
 
 func (r Rabbit) GetOverview(payload Payload) (resp Overview, err error) {
 
+	r.checkConnection()
+
 	values := url.Values{}
 	values.Set("lengths_age", strconv.Itoa(payload.LengthsAge))
 	values.Set("lengths_incr", strconv.Itoa(payload.LengthsIncr))
@@ -125,6 +127,8 @@ func (r Rabbit) GetOverview(payload Payload) (resp Overview, err error) {
 
 func (r Rabbit) GetQueue(queue string, payload Payload) (resp Queue, err error) {
 
+	r.checkConnection()
+
 	values := url.Values{}
 	values.Set("lengths_age", strconv.Itoa(payload.LengthsAge))
 	values.Set("lengths_incr", strconv.Itoa(payload.LengthsIncr))
@@ -163,6 +167,22 @@ func (r Rabbit) GetQueue(queue string, payload Payload) (resp Queue, err error) 
 	}
 
 	return resp, nil
+}
+
+func (r Rabbit) checkConnection() {
+
+	if r.Username == "" {
+		r.Username = "guest"
+	}
+	if r.Password == "" {
+		r.Password = "guest"
+	}
+	if r.Host == "" {
+		r.Host = "localhost"
+	}
+	if r.Port == "" {
+		r.Port = "15672"
+	}
 }
 
 type Overview struct {
