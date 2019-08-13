@@ -88,6 +88,10 @@ func (r Rabbit) GetOverview(payload Payload) (resp Overview, err error) {
 	values.Set("msg_rates_incr", strconv.Itoa(payload.MsgRatesIncr))
 
 	req, err := http.NewRequest("GET", "http://"+r.Host+":"+r.Port+"/api/overview?"+values.Encode(), nil)
+	if err != nil {
+		return resp, err
+	}
+
 	req.SetBasicAuth(r.Username, r.Password)
 
 	client := &http.Client{}
@@ -138,6 +142,10 @@ func (r Rabbit) GetQueue(queue string, payload Payload) (resp Queue, err error) 
 	values.Set("data_rates_incr", strconv.Itoa(payload.DataRatesIncr))
 
 	req, err := http.NewRequest("GET", "http://"+r.Host+":"+r.Port+"/api/queues/%2F/"+queue+"?"+values.Encode(), nil)
+	if err != nil {
+		return resp, err
+	}
+
 	req.SetBasicAuth(r.Username, r.Password)
 
 	client := &http.Client{}
