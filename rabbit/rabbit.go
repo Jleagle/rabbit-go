@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-var (
+const (
 	oneMinute  Range = "1m"
 	tenMinutes Range = "10m"
 	oneHour    Range = "1h"
