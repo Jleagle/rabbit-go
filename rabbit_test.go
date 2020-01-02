@@ -9,8 +9,8 @@ import (
 
 const (
 	localDSN               = "amqp://guest:guest@localhost:5672"
-	queueName    QueueName = "queue-name"
-	consumerName           = "consumer-name"
+	queueName    QueueName = "rabbit-go-test"
+	consumerName           = "rabbit-go-consumer"
 )
 
 var (
