@@ -16,15 +16,8 @@ type Message struct {
 	sync.Mutex
 }
 
-func (message *Message) Ack() {
-	message.ack(false)
-}
-
-func (message *Message) AckMultiple() {
-	message.ack(true)
-}
-
-func (message *Message) ack(multiple bool) {
+// Actions
+func (message *Message) Ack(multiple bool) {
 
 	message.Lock()
 	defer message.Unlock()
@@ -41,6 +34,24 @@ func (message *Message) ack(multiple bool) {
 	}
 }
 
+func (message *Message) Nack(multiple bool, requeue bool) {
+
+	message.Lock()
+	defer message.Unlock()
+
+	if message.ActionTaken {
+		return
+	}
+
+	err := message.Message.Nack(multiple, requeue)
+	if err != nil {
+		logError(err)
+	} else {
+		message.ActionTaken = true
+	}
+}
+
+// Helpers
 func (message *Message) SendToQueue(channels ...*Channel) {
 
 	// Send to back of current queue if none specified
@@ -61,7 +72,7 @@ func (message *Message) SendToQueue(channels ...*Channel) {
 	}
 
 	if ack {
-		message.Ack()
+		message.Ack(false)
 	}
 }
 
