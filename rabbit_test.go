@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	localDSN               = "localhost:5672"
+	localDSN               = "amqp://guest:guest@localhost:5672"
 	queueName    QueueName = "queue-name"
 	consumerName           = "consumer-name"
 )
