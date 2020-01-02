@@ -6,10 +6,19 @@ import (
 
 var (
 	logInfo = func(i ...interface{}) {
-		fmt.Println(i)
+		j := []interface{}{"Info:"}
+		j = append(j, i...)
+		fmt.Println(j...)
 	}
 	logError = func(i ...interface{}) {
-		fmt.Println(i)
+		j := []interface{}{"Error:"}
+		j = append(j, i...)
+		fmt.Println(j...)
+	}
+	logWarning = func(i ...interface{}) {
+		j := []interface{}{"Warning:"}
+		j = append(j, i...)
+		fmt.Println(j...)
 	}
 )
 
@@ -19,4 +28,8 @@ func SetLogInfo(f func(i ...interface{})) {
 
 func SetLogError(f func(i ...interface{})) {
 	logError = f
+}
+
+func SetLogWarning(f func(i ...interface{})) {
+	logWarning = f
 }
