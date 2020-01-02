@@ -175,34 +175,34 @@ func (channel Channel) prepareHeaders(headers amqp.Table) amqp.Table {
 
 	//
 	attemptSet := false
-	attempt, ok := headers[HeaderAttempt]
+	attempt, ok := headers[headerAttempt]
 	if ok {
 		if val, ok2 := attempt.(int); ok2 {
-			headers[HeaderAttempt] = val + 1
+			headers[headerAttempt] = val + 1
 			attemptSet = true
 		}
 	}
 	if !attemptSet {
-		headers[HeaderAttempt] = 1
+		headers[headerAttempt] = 1
 	}
 
 	//
-	_, ok = headers[HeaderFirstSeen]
+	_, ok = headers[headerFirstSeen]
 	if !ok {
-		headers[HeaderFirstSeen] = time.Now().Unix()
+		headers[headerFirstSeen] = time.Now().Unix()
 	}
 
 	//
-	headers[HeaderLastSeen] = time.Now().Unix()
+	headers[headerLastSeen] = time.Now().Unix()
 
 	//
-	_, ok = headers[HeaderFirstQueue]
+	_, ok = headers[headerFirstQueue]
 	if !ok {
-		headers[HeaderFirstQueue] = string(channel.QueueName)
+		headers[headerFirstQueue] = string(channel.QueueName)
 	}
 
 	//
-	headers[HeaderLastQueue] = string(channel.QueueName)
+	headers[headerLastQueue] = string(channel.QueueName)
 
 	return headers
 }

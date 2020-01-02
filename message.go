@@ -80,24 +80,25 @@ func (message *Message) PercentOfBatch() float64 {
 	return float64(message.BatchItem) / float64(message.BatchTotal) * 100
 }
 
+// Headers
 const (
-	HeaderAttempt    = "attempt"
-	HeaderFirstSeen  = "first-seen"
-	HeaderLastSeen   = "last-seen"
-	HeaderFirstQueue = "first-queue"
-	HeaderLastQueue  = "last-queue"
+	headerAttempt    = "attempt"
+	headerFirstSeen  = "first-seen"
+	headerLastSeen   = "last-seen"
+	headerFirstQueue = "first-queue"
+	headerLastQueue  = "last-queue"
 )
 
 func (message Message) Attempt() (i int) {
 
 	i = 1
-	if val, ok := message.Message.Headers[HeaderAttempt]; ok {
+	if val, ok := message.Message.Headers[headerAttempt]; ok {
 		if val2, ok2 := val.(int32); ok2 {
 			i = int(val2)
 		}
 	}
 
-	message.Message.Headers[HeaderAttempt] = i
+	message.Message.Headers[headerAttempt] = i
 
 	return i
 }
@@ -105,13 +106,13 @@ func (message Message) Attempt() (i int) {
 func (message Message) FirstSeen() (i time.Time) {
 
 	i = time.Now()
-	if val, ok := message.Message.Headers[HeaderFirstSeen]; ok {
+	if val, ok := message.Message.Headers[headerFirstSeen]; ok {
 		if val2, ok2 := val.(int64); ok2 {
 			i = time.Unix(val2, 0)
 		}
 	}
 
-	message.Message.Headers[HeaderFirstSeen] = i
+	message.Message.Headers[headerFirstSeen] = i
 
 	return i
 }
@@ -119,13 +120,13 @@ func (message Message) FirstSeen() (i time.Time) {
 func (message Message) LastSeen() (i time.Time) {
 
 	i = time.Now()
-	if val, ok := message.Message.Headers[HeaderLastSeen]; ok {
+	if val, ok := message.Message.Headers[headerLastSeen]; ok {
 		if val2, ok2 := val.(int64); ok2 {
 			i = time.Unix(val2, 0)
 		}
 	}
 
-	message.Message.Headers[HeaderLastSeen] = i
+	message.Message.Headers[headerLastSeen] = i
 
 	return i
 }
@@ -133,7 +134,7 @@ func (message Message) LastSeen() (i time.Time) {
 func (message Message) FirstQueue() (i QueueName) {
 
 	i = ""
-	if val, ok := message.Message.Headers[HeaderFirstQueue]; ok {
+	if val, ok := message.Message.Headers[headerFirstQueue]; ok {
 		if val2, ok2 := val.(string); ok2 {
 			i = QueueName(val2)
 		}
@@ -144,7 +145,7 @@ func (message Message) FirstQueue() (i QueueName) {
 func (message Message) LastQueue() (i QueueName) {
 
 	i = ""
-	if val, ok := message.Message.Headers[HeaderLastQueue]; ok {
+	if val, ok := message.Message.Headers[headerLastQueue]; ok {
 		if val2, ok2 := val.(string); ok2 {
 			i = QueueName(val2)
 		}
