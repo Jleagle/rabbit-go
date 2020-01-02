@@ -15,15 +15,6 @@ const (
 	Producer ConnType = "producer"
 )
 
-type Connection struct {
-	dial       string
-	connection *amqp.Connection
-	config     amqp.Config
-	closeChan  chan *amqp.Error
-	connType   ConnType
-	sync.Mutex
-}
-
 func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connection, err error) {
 
 	connection := &Connection{
@@ -63,12 +54,26 @@ func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connec
 	return connection, nil
 }
 
+type Connection struct {
+	dial       string
+	connection *amqp.Connection
+	config     amqp.Config
+	closeChan  chan *amqp.Error
+	connType   ConnType
+	sync.Mutex
+}
+
+func (connection Connection) isReady() bool {
+
+	return connection.connection != nil && !connection.connection.IsClosed()
+}
+
 func (connection *Connection) connect() error {
 
 	connection.Lock()
 	defer connection.Unlock()
 
-	if connection.connection != nil && !connection.connection.IsClosed() {
+	if !connection.isReady() {
 		return nil
 	}
 

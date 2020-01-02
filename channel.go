@@ -15,20 +15,6 @@ type (
 	Handler   func(message []*Message)
 )
 
-type Channel struct {
-	QueueName     QueueName
-	ConsumerName  string
-	connection    *Connection
-	channel       *amqp.Channel
-	closeChan     chan *amqp.Error
-	handler       Handler
-	isOpen        bool
-	prefetchCount int
-	batchSize     int
-	updateHeaders bool
-	connectLock   sync.Mutex
-}
-
 func NewChannel(connection *Connection, queueName QueueName, consumerName string, prefetchCount int, batchSize int, handler Handler, updateHeaders bool) (c *Channel, err error) {
 
 	channel := &Channel{
@@ -61,6 +47,25 @@ func NewChannel(connection *Connection, queueName QueueName, consumerName string
 	return channel, nil
 }
 
+type Channel struct {
+	QueueName     QueueName
+	ConsumerName  string
+	connection    *Connection
+	channel       *amqp.Channel
+	closeChan     chan *amqp.Error
+	handler       Handler
+	isOpen        bool
+	prefetchCount int
+	batchSize     int
+	updateHeaders bool
+	connectLock   sync.Mutex
+}
+
+func (channel Channel) isReady() bool {
+
+	return channel.connection.isReady() && channel.isOpen || channel.channel != nil
+}
+
 func (channel *Channel) connect() error {
 
 	channel.connectLock.Lock()
@@ -72,7 +77,7 @@ func (channel *Channel) connect() error {
 
 	operation := func() (err error) {
 
-		if channel.connection.connection == nil || channel.connection.connection.IsClosed() {
+		if !channel.connection.isReady() {
 			return errors.New("waiting for connecting before channel")
 		}
 
