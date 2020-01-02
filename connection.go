@@ -90,8 +90,9 @@ func (connection *Connection) connect() error {
 	}
 
 	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second * 1
+	policy.MaxInterval = time.Minute * 5
 	policy.MaxElapsedTime = 0
-	policy.InitialInterval = 5 * time.Second
 
 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo("Trying to connect to Rabbit", err) })
 	if err == nil {

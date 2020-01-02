@@ -111,8 +111,9 @@ func (channel *Channel) connect() error {
 	}
 
 	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second * 1
+	policy.MaxInterval = time.Minute * 5
 	policy.MaxElapsedTime = 0
-	policy.InitialInterval = 5 * time.Second
 
 	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo("Connecting to channel: ", err) })
 }
