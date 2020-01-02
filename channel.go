@@ -82,7 +82,7 @@ func (channel *Channel) connect() error {
 			return err
 		}
 
-		// Set pre-fetch
+		// Set prefetch
 		if channel.prefetchCount > 0 {
 			err = c.Qos(channel.prefetchCount, 0, false)
 			if err != nil {
