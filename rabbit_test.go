@@ -22,7 +22,7 @@ func TestConnection(t *testing.T) {
 
 	var err error
 
-	// Producers
+	// Producer
 	producerConnection, err := NewConnection(localDSN, Producer, amqp.Config{})
 	if err != nil {
 		logInfo(err)
@@ -34,7 +34,7 @@ func TestConnection(t *testing.T) {
 		logError(string(queueName), err)
 	}
 
-	// Consumers
+	// Consumer
 	consumerConnection, err := NewConnection(localDSN, Consumer, amqp.Config{})
 	if err != nil {
 		logInfo(err)
@@ -57,8 +57,13 @@ func TestConnection(t *testing.T) {
 			if err != nil {
 				logError(err)
 			}
-			time.Sleep(time.Second * 5)
+			time.Sleep(time.Second * 2)
 		}
+	}()
+
+	go func() {
+		time.Sleep(time.Second * 5)
+		consumerConnection.closeChan <- &amqp.Error{Code: 404, Reason: "testing", Server: true, Recover: true}
 	}()
 
 	select {}
@@ -68,6 +73,6 @@ func handler(messages []*Message) {
 
 	for _, message := range messages {
 		logInfo(string(message.Message.Body))
-		message.Ack()
+		message.Ack(false)
 	}
 }
