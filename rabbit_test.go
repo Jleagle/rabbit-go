@@ -57,12 +57,12 @@ func TestConnection(t *testing.T) {
 			if err != nil {
 				logError(err)
 			}
-			time.Sleep(time.Second * 2)
+			<-time.NewTimer(time.Second * 2).C
 		}
 	}()
 
 	go func() {
-		time.Sleep(time.Second * 5)
+		<-time.NewTimer(time.Second * 5).C
 		consumerConnection.closeChan <- &amqp.Error{Code: 404, Reason: "testing", Server: true, Recover: true}
 	}()
 

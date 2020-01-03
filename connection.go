@@ -41,7 +41,7 @@ func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connec
 					logError("Rabbit connection closed")
 				}
 
-				time.Sleep(time.Second * 10)
+				<-time.NewTimer(time.Second * 10).C
 
 				err := connection.connect()
 				if err != nil {

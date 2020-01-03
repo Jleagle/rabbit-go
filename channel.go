@@ -170,7 +170,7 @@ func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 		logError("Failed to reconnect channel", err)
 	}
 
-	time.Sleep(time.Second * 20)
+	<-time.NewTimer(time.Second * 20).C
 }
 
 func (channel Channel) prepareHeaders(headers amqp.Table) amqp.Table {
@@ -219,7 +219,9 @@ func (channel *Channel) Consume() {
 
 		if !channel.isOpen || channel.channel == nil {
 			logInfo("Can't consume when channel is nil/closed")
-			time.Sleep(time.Second * 5)
+
+			<-time.NewTimer(time.Second * 5).C
+
 			continue
 		}
 
@@ -268,7 +270,7 @@ func (channel *Channel) Consume() {
 			}
 		}()
 
-		time.Sleep(time.Second * 5)
+		<-time.NewTimer(time.Second * 5).C
 	}
 }
 
