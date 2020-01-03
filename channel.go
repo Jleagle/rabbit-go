@@ -217,7 +217,7 @@ func (channel *Channel) Consume() {
 
 	for {
 
-		if !channel.isOpen || channel.channel == nil {
+		if !channel.isReady() {
 			logInfo("Can't consume when channel is nil/closed")
 
 			<-time.NewTimer(time.Second * 5).C
@@ -244,7 +244,7 @@ func (channel *Channel) Consume() {
 					return
 
 				case msg, open := <-msgs:
-					if open && channel.connection.connection != nil && !channel.connection.connection.IsClosed() {
+					if open && channel.connection.isReady() {
 						messages = append(messages, &Message{
 							Channel: channel,
 							Message: &msg,
