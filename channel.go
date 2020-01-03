@@ -71,14 +71,14 @@ func (channel *Channel) connect() error {
 	channel.connectLock.Lock()
 	defer channel.connectLock.Unlock()
 
-	if channel.isOpen {
+	if channel.isReady() {
 		return nil
 	}
 
 	operation := func() (err error) {
 
 		if !channel.connection.isReady() {
-			return errors.New("waiting for connecting before channel")
+			return errors.New("waiting for connection")
 		}
 
 		// Connect

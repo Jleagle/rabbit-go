@@ -73,7 +73,7 @@ func (connection *Connection) connect() error {
 	connection.Lock()
 	defer connection.Unlock()
 
-	if !connection.isReady() {
+	if connection.isReady() {
 		return nil
 	}
 
