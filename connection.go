@@ -31,15 +31,11 @@ func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connec
 	go func() {
 		for {
 			select {
-			case amqpErr, open := <-connection.closeChan:
+			case amqpErr, _ := <-connection.closeChan:
 
 				connection.connection = nil
 
-				if open {
-					logError("Rabbit connection closed", amqpErr)
-				} else {
-					logError("Rabbit connection closed")
-				}
+				logError("Rabbit connection closed", amqpErr)
 
 				<-time.NewTimer(time.Second * 10).C
 
