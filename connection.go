@@ -23,10 +23,7 @@ func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connec
 		connType: conType,
 	}
 
-	err = connection.connect()
-	if err != nil {
-		return c, err
-	}
+	connection.connect()
 
 	go func() {
 		for {
@@ -39,10 +36,7 @@ func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connec
 
 				<-time.NewTimer(time.Second * 10).C
 
-				err := connection.connect()
-				if err != nil {
-					logError("Failed to reconnect connection", err)
-				}
+				connection.connect()
 			}
 		}
 	}()
@@ -64,13 +58,13 @@ func (connection Connection) isReady() bool {
 	return connection.connection != nil && !connection.connection.IsClosed()
 }
 
-func (connection *Connection) connect() error {
+func (connection *Connection) connect() {
 
 	connection.Lock()
 	defer connection.Unlock()
 
 	if connection.isReady() {
-		return nil
+		return
 	}
 
 	logInfo("Creating Rabbit connection (" + connection.connType + ")")
@@ -96,8 +90,9 @@ func (connection *Connection) connect() error {
 	policy.MaxElapsedTime = 0
 
 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo("Trying to connect to Rabbit", err) })
-	if err == nil {
+	if err != nil {
+		logError(err)
+	} else {
 		logInfo("Rabbit conn connected (" + connection.connType + ")")
 	}
-	return err
 }

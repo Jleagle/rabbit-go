@@ -27,10 +27,7 @@ func NewChannel(connection *Connection, queueName QueueName, consumerName string
 		updateHeaders: updateHeaders,
 	}
 
-	err = channel.connect()
-	if err != nil {
-		return c, err
-	}
+	channel.connect()
 
 	// For producer channels
 	if connection.connType == Producer {
@@ -66,13 +63,13 @@ func (channel Channel) isReady() bool {
 	return channel.connection.isReady() && channel.isOpen || channel.channel != nil
 }
 
-func (channel *Channel) connect() error {
+func (channel *Channel) connect() {
 
 	channel.connectLock.Lock()
 	defer channel.connectLock.Unlock()
 
 	if channel.isReady() {
-		return nil
+		return
 	}
 
 	operation := func() (err error) {
@@ -120,7 +117,12 @@ func (channel *Channel) connect() error {
 	policy.MaxInterval = time.Minute * 5
 	policy.MaxElapsedTime = 0
 
-	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo("Connecting to channel: ", err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo("Connecting to channel: ", err) })
+	if err != nil {
+		logError(err)
+	} else {
+		logInfo("Rabbit chan connected (" + channel.QueueName + ")")
+	}
 }
 
 func (channel *Channel) produceMessage(message *Message) error {
@@ -165,10 +167,7 @@ func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 
 	logError("Rabbit channel closed ("+channel.QueueName+")", amqpErr)
 
-	err := channel.connect()
-	if err != nil {
-		logError("Failed to reconnect channel", err)
-	}
+	channel.connect()
 
 	<-time.NewTimer(time.Second * 20).C
 }
