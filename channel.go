@@ -164,6 +164,7 @@ func (channel *Channel) Produce(message interface{}) error {
 func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 
 	channel.isOpen = false
+	channel.channel = nil
 
 	logError("Rabbit channel disconnected ("+channel.QueueName+")", amqpErr)
 
