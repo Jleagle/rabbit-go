@@ -60,7 +60,7 @@ type Channel struct {
 
 func (channel Channel) isReady() bool {
 
-	return channel.connection.isReady() && channel.isOpen || channel.channel != nil
+	return channel.connection.isReady() && channel.isOpen && channel.channel != nil
 }
 
 func (channel *Channel) connect() {
