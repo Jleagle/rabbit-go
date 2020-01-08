@@ -169,8 +169,6 @@ func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 	logError("Rabbit channel disconnected ("+channel.QueueName+")", amqpErr)
 
 	channel.connect()
-
-	<-time.NewTimer(time.Second * 20).C
 }
 
 func (channel Channel) prepareHeaders(headers amqp.Table) amqp.Table {
