@@ -165,7 +165,7 @@ func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 
 	channel.isOpen = false
 
-	logError("Rabbit channel closed ("+channel.QueueName+")", amqpErr)
+	logError("Rabbit channel disconnected ("+channel.QueueName+")", amqpErr)
 
 	channel.connect()
 
