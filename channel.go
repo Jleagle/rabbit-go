@@ -107,8 +107,6 @@ func (channel *Channel) connect() {
 		//
 		channel.isOpen = true
 
-		logInfo("Rabbit chan connected (" + string(channel.connection.connType) + "/" + string(channel.QueueName) + ")")
-
 		return nil
 	}
 
@@ -121,7 +119,7 @@ func (channel *Channel) connect() {
 	if err != nil {
 		logError(err)
 	} else {
-		logInfo("Rabbit chan connected (" + channel.QueueName + ")")
+		logInfo("Rabbit chan connected (" + string(channel.connection.connType) + "/" + string(channel.QueueName) + ")")
 	}
 }
 
