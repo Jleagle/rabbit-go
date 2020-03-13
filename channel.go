@@ -214,6 +214,7 @@ func (channel *Channel) Consume() {
 	for {
 
 		if !channel.isReady() {
+
 			logInfo("Can't consume when channel is nil/closed")
 
 			<-time.NewTimer(time.Second * 5).C
