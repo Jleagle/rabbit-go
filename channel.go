@@ -117,7 +117,7 @@ func (channel *Channel) connect() {
 	policy.MaxInterval = time.Minute * 5
 	policy.MaxElapsedTime = 0
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo("Connecting to channel: ", err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logWarning("Connecting to channel: ", err) })
 	if err != nil {
 		logError(err)
 	} else {

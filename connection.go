@@ -87,7 +87,7 @@ func (connection *Connection) connect() {
 	policy.MaxInterval = time.Minute * 5
 	policy.MaxElapsedTime = 0
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logInfo("Trying to connect to Rabbit", err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logWarning("Trying to connect to Rabbit", err) })
 	if err != nil {
 		logError(err)
 	} else {
