@@ -126,9 +126,7 @@ func (channel *Channel) connect() {
 func (channel *Channel) produceMessage(message *Message) error {
 
 	// Headers
-	if channel.updateHeaders {
-		message.Message.Headers = channel.prepareHeaders(message.Message.Headers)
-	}
+	message.Message.Headers = channel.prepareHeaders(message.Message.Headers, channel.updateHeaders)
 
 	//
 	return channel.channel.Publish("", string(channel.QueueName), false, false, amqp.Publishing{
@@ -147,9 +145,7 @@ func (channel *Channel) Produce(message interface{}) error {
 	}
 
 	headers := amqp.Table{}
-	if channel.updateHeaders {
-		headers = channel.prepareHeaders(headers)
-	}
+	headers = channel.prepareHeaders(headers, channel.updateHeaders)
 
 	return channel.channel.Publish("", string(channel.QueueName), false, false, amqp.Publishing{
 		Headers:      headers,
@@ -169,42 +165,55 @@ func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 	channel.connect()
 }
 
-func (channel Channel) prepareHeaders(headers amqp.Table) amqp.Table {
+func (channel Channel) prepareHeaders(headers amqp.Table, update bool) amqp.Table {
 
 	if headers == nil {
 		headers = amqp.Table{}
 	}
 
-	//
-	attemptSet := false
-	attempt, ok := headers[headerAttempt]
-	if ok {
-		if val, ok2 := attempt.(int); ok2 {
-			headers[headerAttempt] = val + 1
-			attemptSet = true
-		}
-	}
-	if !attemptSet {
-		headers[headerAttempt] = 1
+	var ok bool
+
+	_, ok = headers[headerAttempt]
+	if !ok {
+		headers[headerAttempt] = 0
 	}
 
-	//
 	_, ok = headers[headerFirstSeen]
 	if !ok {
-		headers[headerFirstSeen] = time.Now().Unix()
+		headers[headerFirstSeen] = 0
 	}
 
-	//
-	headers[headerLastSeen] = time.Now().Unix()
-
-	//
-	_, ok = headers[headerFirstQueue]
+	_, ok = headers[headerLastSeen]
 	if !ok {
-		headers[headerFirstQueue] = string(channel.QueueName)
+		headers[headerLastSeen] = 0
 	}
 
 	//
-	headers[headerLastQueue] = string(channel.QueueName)
+	if update {
+
+		//
+		if val, ok := headers[headerAttempt].(int); ok {
+			headers[headerAttempt] = val + 1
+		} else {
+			headers[headerAttempt] = 1
+		}
+
+		//
+		if val, ok := headers[headerFirstSeen].(int); !ok || val == 0 {
+			headers[headerFirstSeen] = time.Now().Unix()
+		}
+
+		//
+		headers[headerLastSeen] = time.Now().Unix()
+
+		//
+		if val, ok := headers[headerFirstQueue]; !ok || val == "" {
+			headers[headerFirstQueue] = string(channel.QueueName)
+		}
+
+		//
+		headers[headerLastQueue] = string(channel.QueueName)
+	}
 
 	return headers
 }
