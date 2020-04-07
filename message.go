@@ -94,7 +94,7 @@ const (
 	headerLastQueue  = "last-queue"
 )
 
-func (message Message) Attempt() (i int) {
+func (message *Message) Attempt() (i int) {
 
 	i = 1
 	if val, ok := message.Message.Headers[headerAttempt]; ok {
@@ -108,7 +108,7 @@ func (message Message) Attempt() (i int) {
 	return i
 }
 
-func (message Message) FirstSeen() (i time.Time) {
+func (message *Message) FirstSeen() (i time.Time) {
 
 	i = time.Now()
 	if val, ok := message.Message.Headers[headerFirstSeen]; ok {
@@ -122,7 +122,7 @@ func (message Message) FirstSeen() (i time.Time) {
 	return i
 }
 
-func (message Message) LastSeen() (i time.Time) {
+func (message *Message) LastSeen() (i time.Time) {
 
 	i = time.Now()
 	if val, ok := message.Message.Headers[headerLastSeen]; ok {
@@ -136,7 +136,7 @@ func (message Message) LastSeen() (i time.Time) {
 	return i
 }
 
-func (message Message) FirstQueue() (i QueueName) {
+func (message *Message) FirstQueue() (i QueueName) {
 
 	i = ""
 	if val, ok := message.Message.Headers[headerFirstQueue]; ok {
@@ -147,7 +147,7 @@ func (message Message) FirstQueue() (i QueueName) {
 	return i
 }
 
-func (message Message) LastQueue() (i QueueName) {
+func (message *Message) LastQueue() (i QueueName) {
 
 	i = ""
 	if val, ok := message.Message.Headers[headerLastQueue]; ok {
