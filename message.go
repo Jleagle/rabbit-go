@@ -108,32 +108,38 @@ func (message *Message) Attempt() (i int) {
 	return i
 }
 
-func (message *Message) FirstSeen() (i time.Time) {
+func (message *Message) FirstSeen() (t time.Time) {
 
-	i = time.Now()
+	var i int64
 	if val, ok := message.Message.Headers[headerFirstSeen]; ok {
 		if val2, ok2 := val.(int64); ok2 {
-			i = time.Unix(val2, 0)
+			i = val2
+		}
+		if val2, ok2 := val.(time.Time); ok2 {
+			i = val2.Unix()
 		}
 	}
 
 	message.Message.Headers[headerFirstSeen] = i
 
-	return i
+	return time.Unix(i, 0)
 }
 
-func (message *Message) LastSeen() (i time.Time) {
+func (message *Message) LastSeen() (t time.Time) {
 
-	i = time.Now()
+	var i int64
 	if val, ok := message.Message.Headers[headerLastSeen]; ok {
 		if val2, ok2 := val.(int64); ok2 {
-			i = time.Unix(val2, 0)
+			i = val2
+		}
+		if val2, ok2 := val.(time.Time); ok2 {
+			i = val2.Unix()
 		}
 	}
 
 	message.Message.Headers[headerLastSeen] = i
 
-	return i
+	return time.Unix(i, 0)
 }
 
 func (message *Message) FirstQueue() (i QueueName) {
