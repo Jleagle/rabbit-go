@@ -20,6 +20,8 @@ var (
 
 func TestConnection(t *testing.T) {
 
+	SetDebug(true)
+
 	var err error
 
 	// Producer
