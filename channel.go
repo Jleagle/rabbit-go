@@ -126,7 +126,7 @@ func (channel *Channel) connect() {
 func (channel *Channel) produceMessage(message *Message) error {
 
 	// Headers
-	message.Message.Headers = channel.prepareHeaders(message.Message.Headers, channel.updateHeaders)
+	message.Message.Headers = channel.setHeaders(message.Message.Headers, channel.updateHeaders)
 
 	//
 	return channel.channel.Publish("", string(channel.QueueName), false, false, amqp.Publishing{
@@ -147,7 +147,7 @@ func (channel *Channel) Produce(body interface{}, mutator ProduceOption) error {
 	}
 
 	msg := amqp.Publishing{
-		Headers:      channel.prepareHeaders(nil, channel.updateHeaders),
+		Headers:      channel.setHeaders(nil, channel.updateHeaders),
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
 		Body:         b,
@@ -170,7 +170,7 @@ func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 	channel.connect()
 }
 
-func (channel *Channel) prepareHeaders(headers amqp.Table, update bool) amqp.Table {
+func (channel *Channel) setHeaders(headers amqp.Table, update bool) amqp.Table {
 
 	if headers == nil {
 		headers = amqp.Table{}
