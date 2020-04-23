@@ -137,22 +137,27 @@ func (channel *Channel) produceMessage(message *Message) error {
 	})
 }
 
-func (channel *Channel) Produce(message interface{}) error {
+type ProduceOption = func(amqp.Publishing) amqp.Publishing
 
-	b, err := json.Marshal(message)
+func (channel Channel) Produce(body interface{}, mutator ProduceOption) error {
+
+	b, err := json.Marshal(body)
 	if err != nil {
 		return err
 	}
 
-	headers := amqp.Table{}
-	headers = channel.prepareHeaders(headers, channel.updateHeaders)
-
-	return channel.channel.Publish("", string(channel.QueueName), false, false, amqp.Publishing{
-		Headers:      headers,
+	msg := amqp.Publishing{
+		Headers:      channel.prepareHeaders(nil, channel.updateHeaders),
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
 		Body:         b,
-	})
+	}
+
+	if mutator != nil {
+		msg = mutator(msg)
+	}
+
+	return channel.channel.Publish("", string(channel.QueueName), false, false, msg)
 }
 
 func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
