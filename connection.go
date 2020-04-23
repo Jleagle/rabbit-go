@@ -51,7 +51,7 @@ type Connection struct {
 	sync.Mutex
 }
 
-func (connection Connection) isReady() bool {
+func (connection *Connection) isReady() bool {
 
 	return connection.connection != nil && !connection.connection.IsClosed()
 }

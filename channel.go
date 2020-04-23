@@ -58,7 +58,7 @@ type Channel struct {
 	connectLock   sync.Mutex
 }
 
-func (channel Channel) isReady() bool {
+func (channel *Channel) isReady() bool {
 
 	return channel.connection.isReady() && channel.isOpen && channel.channel != nil
 }
@@ -139,7 +139,7 @@ func (channel *Channel) produceMessage(message *Message) error {
 
 type ProduceOption = func(amqp.Publishing) amqp.Publishing
 
-func (channel Channel) Produce(body interface{}, mutator ProduceOption) error {
+func (channel *Channel) Produce(body interface{}, mutator ProduceOption) error {
 
 	b, err := json.Marshal(body)
 	if err != nil {
@@ -170,7 +170,7 @@ func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 	channel.connect()
 }
 
-func (channel Channel) prepareHeaders(headers amqp.Table, update bool) amqp.Table {
+func (channel *Channel) prepareHeaders(headers amqp.Table, update bool) amqp.Table {
 
 	if headers == nil {
 		headers = amqp.Table{}
