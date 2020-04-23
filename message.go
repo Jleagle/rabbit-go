@@ -52,33 +52,13 @@ func (message *Message) Nack(multiple bool, requeue bool) {
 }
 
 // Helpers
-func (message *Message) SendToQueue(channels ...*Channel) error {
+func (message *Message) SendToQueueAndAck(channel *Channel) (err error) {
 
-	// Send to back of current queue if none specified
-	if len(channels) == 0 {
-		channels = []*Channel{message.Channel}
-	}
-
-	//
-	var err error
-	var lastErr error
-	var ack = true
-
-	for _, channel := range channels {
-		err = channel.produceMessage(message)
-		if err != nil {
-			logError(err)
-			ack = false
-			lastErr = err
-		}
-	}
-
-	if ack {
+	err = channel.produceMessage(message)
+	if err == nil {
 		message.Ack(false)
-		return nil
 	}
-
-	return lastErr
+	return err
 }
 
 func (message *Message) PercentOfBatch() float64 {
