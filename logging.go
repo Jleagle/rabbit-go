@@ -27,14 +27,17 @@ var (
 	}
 )
 
+//noinspection GoUnusedExportedFunction
 func SetLogInfo(f func(i ...interface{})) {
 	logInfo = f
 }
 
+//noinspection GoUnusedExportedFunction
 func SetLogWarning(f func(i ...interface{})) {
 	logWarning = f
 }
 
+//noinspection GoUnusedExportedFunction
 func SetLogError(f func(i ...interface{})) {
 	logError = f
 }
