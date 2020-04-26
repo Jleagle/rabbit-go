@@ -123,23 +123,29 @@ func (channel *Channel) connect() {
 	}
 }
 
-func (channel *Channel) produceMessage(message *Message) error {
+type ProduceOptions = func(amqp.Publishing) amqp.Publishing
+
+func (channel *Channel) produceMessage(message *Message, mutator ProduceOptions) error {
 
 	// Headers
 	message.Message.Headers = channel.setHeaders(message.Message.Headers, channel.updateHeaders)
 
 	//
-	return channel.channel.Publish("", string(channel.QueueName), false, false, amqp.Publishing{
+	msg := amqp.Publishing{
 		Headers:      message.Message.Headers,
 		DeliveryMode: message.Message.DeliveryMode,
 		ContentType:  message.Message.ContentType,
 		Body:         message.Message.Body,
-	})
+	}
+
+	if mutator != nil {
+		msg = mutator(msg)
+	}
+
+	return channel.channel.Publish("", string(channel.QueueName), false, false, msg)
 }
 
-type ProduceOption = func(amqp.Publishing) amqp.Publishing
-
-func (channel *Channel) Produce(body interface{}, mutator ProduceOption) error {
+func (channel *Channel) Produce(body interface{}, mutator ProduceOptions) error {
 
 	b, err := json.Marshal(body)
 	if err != nil {

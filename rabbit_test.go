@@ -55,7 +55,7 @@ func TestConnection(t *testing.T) {
 		var i int
 		for {
 			i++
-			err := producerChannel.Produce(i)
+			err := producerChannel.Produce(i, nil)
 			if err != nil {
 				logError(err)
 			}

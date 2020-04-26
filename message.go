@@ -52,9 +52,9 @@ func (message *Message) Nack(multiple bool, requeue bool) {
 }
 
 // Helpers
-func (message *Message) SendToQueueAndAck(channel *Channel) (err error) {
+func (message *Message) SendToQueueAndAck(channel *Channel, mutator ProduceOptions) (err error) {
 
-	err = channel.produceMessage(message)
+	err = channel.produceMessage(message, mutator)
 	if err == nil {
 		message.Ack(false)
 	}
