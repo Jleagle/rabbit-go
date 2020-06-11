@@ -169,17 +169,9 @@ func (r Rabbit) GetQueue(queue QueueName, payload Payload) (resp Queue, err erro
 	return resp, err
 }
 
-func (r Rabbit) GetQueues(queue QueueName, payload Payload) (resp Queue, err error) {
+func (r Rabbit) GetQueues() (resp Queues, err error) {
 
 	r.checkConnection()
-
-	values := url.Values{}
-	values.Set("lengths_age", strconv.Itoa(payload.LengthsAge))
-	values.Set("lengths_incr", strconv.Itoa(payload.LengthsIncr))
-	values.Set("msg_rates_age", strconv.Itoa(payload.MsgRatesAge))
-	values.Set("msg_rates_incr", strconv.Itoa(payload.MsgRatesIncr))
-	values.Set("data_rates_age", strconv.Itoa(payload.DataRatesAge))
-	values.Set("data_rates_incr", strconv.Itoa(payload.DataRatesIncr))
 
 	req, err := http.NewRequest("GET", "http://"+r.Host+":"+r.Port+"/api/queues/%2F/", nil)
 	if err != nil {
