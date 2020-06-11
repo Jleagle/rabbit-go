@@ -294,10 +294,13 @@ type Queue struct {
 	Consumers                 int           `json:"consumers"`
 	Deliveries                []interface{} `json:"deliveries"`
 	Durable                   bool          `json:"durable"`
-	EffectivePolicyDefinition []interface{} `json:"effective_policy_definition"`
-	Exclusive                 bool          `json:"exclusive"`
-	ExclusiveConsumerTag      interface{}   `json:"exclusive_consumer_tag"`
-	GarbageCollection         struct {
+	EffectivePolicyDefinition struct {
+		HaMode   string `json:"ha-mode"`
+		HaParams int    `json:"ha-params"`
+	} `json:"effective_policy_definition"`
+	Exclusive            bool        `json:"exclusive"`
+	ExclusiveConsumerTag interface{} `json:"exclusive_consumer_tag"`
+	GarbageCollection    struct {
 		FullsweepAfter  int `json:"fullsweep_after"`
 		MaxHeapSize     int `json:"max_heap_size"`
 		MinBinVheapSize int `json:"min_bin_vheap_size"`
