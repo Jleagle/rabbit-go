@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	oneMinute  Range = "1m"
-	tenMinutes Range = "10m"
-	oneHour    Range = "1h"
-	eightHours Range = "8h"
-	oneDay     Range = "1d"
+	RangeOneMinute  Range = "1m"
+	RangeTenMinutes Range = "10m"
+	RangeOneHour    Range = "1h"
+	RangeEightHours Range = "8h"
+	RangeOneDay     Range = "1d"
 )
 
 type Range string
@@ -32,35 +32,35 @@ type Payload struct {
 func (p *Payload) Preset(rangex Range) {
 
 	switch rangex {
-	case oneMinute:
+	case RangeOneMinute:
 		p.LengthsAge = 60
 		p.LengthsIncr = 5
 		p.MsgRatesAge = 60
 		p.MsgRatesIncr = 5
 		p.DataRatesAge = 60
 		p.DataRatesIncr = 5
-	case tenMinutes:
+	case RangeTenMinutes:
 		p.LengthsAge = 600
 		p.LengthsIncr = 5
 		p.MsgRatesAge = 600
 		p.MsgRatesIncr = 5
 		p.DataRatesAge = 600
 		p.DataRatesIncr = 5
-	case oneHour:
+	case RangeOneHour:
 		p.LengthsAge = 3600
 		p.LengthsIncr = 60
 		p.MsgRatesAge = 3600
 		p.MsgRatesIncr = 60
 		p.DataRatesAge = 3600
 		p.DataRatesIncr = 60
-	case eightHours:
+	case RangeEightHours:
 		p.LengthsAge = 28800
 		p.LengthsIncr = 600
 		p.MsgRatesAge = 28800
 		p.MsgRatesIncr = 600
 		p.DataRatesAge = 28800
 		p.DataRatesIncr = 600
-	case oneDay:
+	case RangeOneDay:
 		p.LengthsAge = 86400
 		p.LengthsIncr = 1800
 		p.MsgRatesAge = 86400
