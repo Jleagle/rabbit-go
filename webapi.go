@@ -316,7 +316,7 @@ type Queue struct {
 		Q2                int           `json:"q2"`
 		Q3                int           `json:"q3"`
 		Q4                int           `json:"q4"`
-		TargetRAMCount    string        `json:"target_ram_count"`
+		TargetRAMCount    interface{}   `json:"target_ram_count"` // Number or "unlimited"
 	} `json:"backing_queue_status"`
 	ConsumerUtilisation       interface{}   `json:"consumer_utilisation"`
 	Consumers                 int           `json:"consumers"`
@@ -437,7 +437,7 @@ type QueuesItem struct {
 		Q2                int           `json:"q2"`
 		Q3                int           `json:"q3"`
 		Q4                int           `json:"q4"`
-		TargetRAMCount    string        `json:"target_ram_count"`
+		TargetRAMCount    interface{}   `json:"target_ram_count"` // Number or "unlimited"
 	} `json:"backing_queue_status"`
 	ConsumerUtilisation       interface{} `json:"consumer_utilisation"`
 	Consumers                 int         `json:"consumers"`
