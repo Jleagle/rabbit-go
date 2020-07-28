@@ -31,7 +31,7 @@ func TestConnection(t *testing.T) {
 		return
 	}
 
-	producerChannel, err = NewChannel(producerConnection, queueName, consumerName, 10, 1, nil, true)
+	producerChannel, err = NewChannel(producerConnection, queueName, consumerName, 1, nil, true)
 	if err != nil {
 		logError(string(queueName), err)
 	}
@@ -43,7 +43,7 @@ func TestConnection(t *testing.T) {
 		return
 	}
 
-	consumerChannel, err = NewChannel(consumerConnection, queueName, consumerName, 10, 1, handler, false)
+	consumerChannel, err = NewChannel(consumerConnection, queueName, consumerName, 1, handler, false)
 	if err != nil {
 		logError(string(queueName), err)
 	}
@@ -71,10 +71,8 @@ func TestConnection(t *testing.T) {
 	select {}
 }
 
-func handler(messages []*Message) {
+func handler(message *Message) {
 
-	for _, message := range messages {
-		logInfo(string(message.Message.Body))
-		message.Ack(false)
-	}
+	logInfo(string(message.Message.Body))
+	message.Ack(false)
 }
