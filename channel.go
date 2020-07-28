@@ -32,10 +32,8 @@ func NewChannel(connection *Connection, queueName QueueName, consumerName string
 	if connection.connType == Producer {
 		go func() {
 			for {
-				select {
-				case amqpErr, _ := <-channel.closeChan:
-					channel.onDisconnect(amqpErr)
-				}
+				amqpErr := <-channel.closeChan
+				channel.onDisconnect(amqpErr)
 			}
 		}()
 	}
@@ -249,7 +247,7 @@ func (channel *Channel) Consume() {
 		func() {
 			for {
 				select {
-				case amqpErr, _ := <-channel.closeChan:
+				case amqpErr := <-channel.closeChan:
 
 					channel.onDisconnect(amqpErr)
 					return

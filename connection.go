@@ -27,15 +27,10 @@ func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connec
 
 	go func() {
 		for {
-			select {
-			case amqpErr, _ := <-connection.closeChan:
-
-				connection.connection = nil
-
-				logError("Rabbit connection disconnected", amqpErr)
-
-				connection.connect()
-			}
+			amqpErr := <-connection.closeChan
+			connection.connection = nil
+			logError("Rabbit connection disconnected", amqpErr)
+			connection.connect()
 		}
 	}()
 
