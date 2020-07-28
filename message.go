@@ -11,8 +11,6 @@ type Message struct {
 	Channel     *Channel
 	Message     *amqp.Delivery
 	ActionTaken bool
-	BatchTotal  int
-	BatchItem   int
 	sync.Mutex
 }
 
@@ -59,14 +57,6 @@ func (message *Message) SendToQueueAndAck(channel *Channel, mutator ProduceOptio
 		message.Ack(false)
 	}
 	return err
-}
-
-func (message *Message) PercentOfBatch() float64 {
-	return float64(message.BatchItem) / float64(message.BatchTotal) * 100
-}
-
-func (message *Message) IsLast() bool {
-	return message.PercentOfBatch() == 100
 }
 
 // Headers

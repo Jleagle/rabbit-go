@@ -1,6 +1,6 @@
 # rabbit-go
 
-- Batching
+- ~~Batching~~
 - Reconnecting
 - Exponential backoff
 - Web API

@@ -12,17 +12,16 @@ import (
 
 type (
 	QueueName string
-	Handler   func(message []*Message)
+	Handler   func(message *Message)
 )
 
-func NewChannel(connection *Connection, queueName QueueName, consumerName string, prefetchCount int, batchSize int, handler Handler, updateHeaders bool) (c *Channel, err error) {
+func NewChannel(connection *Connection, queueName QueueName, consumerName string, prefetchCount int, handler Handler, updateHeaders bool) (c *Channel, err error) {
 
 	channel := &Channel{
 		connection:    connection,
 		QueueName:     queueName,
 		ConsumerName:  consumerName,
 		prefetchCount: prefetchCount,
-		batchSize:     batchSize,
 		handler:       handler,
 		updateHeaders: updateHeaders,
 	}
@@ -53,7 +52,6 @@ type Channel struct {
 	handler       Handler
 	isOpen        bool
 	prefetchCount int
-	batchSize     int
 	updateHeaders bool
 	connectLock   sync.Mutex
 }
@@ -248,11 +246,7 @@ func (channel *Channel) Consume() {
 			continue
 		}
 
-		// In a anon function so can return at anytime
 		func() {
-
-			var messages []*Message
-
 			for {
 				select {
 				case amqpErr, _ := <-channel.closeChan:
@@ -261,27 +255,10 @@ func (channel *Channel) Consume() {
 					return
 
 				case msg, open := <-msgs:
-					if open && channel.connection.isReady() {
-						messages = append(messages, &Message{
-							Channel: channel,
-							Message: &msg,
-						})
-					}
-				}
 
-				if len(messages) > 0 && len(messages) >= channel.batchSize {
+					if open && channel.connection.isReady() && channel.handler != nil {
 
-					if channel.handler != nil {
-
-						// Fill in batch info
-						for k := range messages {
-							messages[k].BatchTotal = len(messages)
-							messages[k].BatchItem = k + 1
-						}
-
-						//
-						channel.handler(messages)
-						messages = nil
+						channel.handler(&Message{Channel: channel, Message: &msg})
 					}
 				}
 			}
