@@ -15,7 +15,7 @@ type Message struct {
 }
 
 // Actions
-func (message *Message) Ack(multiple bool) {
+func (message *Message) Ack(multiple ...bool) {
 
 	message.Lock()
 	defer message.Unlock()
@@ -24,7 +24,7 @@ func (message *Message) Ack(multiple bool) {
 		return
 	}
 
-	err := message.Message.Ack(multiple)
+	err := message.Message.Ack(len(multiple) > 0 && multiple[0])
 	if err != nil {
 		logError(err)
 	} else {
@@ -54,7 +54,7 @@ func (message *Message) SendToQueueAndAck(channel *Channel, mutator ProduceOptio
 
 	err = channel.produceMessage(message, mutator)
 	if err == nil {
-		message.Ack(false)
+		message.Ack()
 	}
 	return err
 }

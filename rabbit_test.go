@@ -74,5 +74,5 @@ func TestConnection(t *testing.T) {
 func handler(message *Message) {
 
 	logInfo(string(message.Message.Body))
-	message.Ack(false)
+	message.Ack()
 }
