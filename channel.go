@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
+	"github.com/google/uuid"
 	"github.com/streadway/amqp"
 )
 
@@ -193,6 +194,12 @@ func (channel *Channel) setHeaders(headers amqp.Table, update bool) amqp.Table {
 	_, ok = headers[headerLastSeen]
 	if !ok {
 		headers[headerLastSeen] = 0
+	}
+
+	_, ok = headers[headerUUID]
+	if !ok {
+		id, _ := uuid.NewRandom()
+		headers[headerUUID] = id.String()
 	}
 
 	//

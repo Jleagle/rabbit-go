@@ -66,6 +66,7 @@ const (
 	headerLastSeen   = "last-seen"
 	headerFirstQueue = "first-queue"
 	headerLastQueue  = "last-queue"
+	headerUUID       = "uuid"
 )
 
 func (message *Message) Attempt() (i int) {
