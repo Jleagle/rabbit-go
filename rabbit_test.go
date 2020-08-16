@@ -1,6 +1,7 @@
 package rabbit
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -20,32 +21,30 @@ var (
 
 func TestConnection(t *testing.T) {
 
-	SetDebug(true)
-
 	var err error
 
 	// Producer
 	producerConnection, err := NewConnection(localDSN, Producer, amqp.Config{})
 	if err != nil {
-		logInfo(err)
+		t.Error(err)
 		return
 	}
 
 	producerChannel, err = NewChannel(producerConnection, queueName, consumerName, 1, nil, true)
 	if err != nil {
-		logError(string(queueName), err)
+		t.Error(queueName, err)
 	}
 
 	// Consumer
 	consumerConnection, err := NewConnection(localDSN, Consumer, amqp.Config{})
 	if err != nil {
-		logInfo(err)
+		t.Error(err)
 		return
 	}
 
 	consumerChannel, err = NewChannel(consumerConnection, queueName, consumerName, 1, handler, false)
 	if err != nil {
-		logError(string(queueName), err)
+		t.Error(queueName, err)
 	}
 
 	go consumerChannel.Consume()
@@ -57,7 +56,7 @@ func TestConnection(t *testing.T) {
 			i++
 			err := producerChannel.Produce(i, nil)
 			if err != nil {
-				logError(err)
+				t.Error(err)
 			}
 			<-time.NewTimer(time.Second * 2).C
 		}
@@ -73,6 +72,6 @@ func TestConnection(t *testing.T) {
 
 func handler(message *Message) {
 
-	logInfo(string(message.Message.Body))
+	fmt.Println("Body: " + string(message.Message.Body))
 	message.Ack()
 }

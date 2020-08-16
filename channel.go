@@ -112,11 +112,11 @@ func (channel *Channel) connect() {
 	policy.MaxInterval = time.Minute * 5
 	policy.MaxElapsedTime = 0
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logWarning("Connecting to channel: ", err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { channel.connection.logInfo("Connecting to channel: ", err) })
 	if err != nil {
-		logError(err)
+		channel.connection.logError(err)
 	} else {
-		logInfo("Rabbit chan connected (" + string(channel.connection.connType) + "/" + string(channel.QueueName) + ")")
+		channel.connection.logInfo("Rabbit chan connected (" + string(channel.connection.connType) + "/" + string(channel.QueueName) + ")")
 	}
 }
 
@@ -168,7 +168,7 @@ func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 	channel.isOpen = false
 	channel.channel = nil
 
-	logError("Rabbit channel disconnected ("+channel.QueueName+")", amqpErr)
+	channel.connection.logError("Rabbit channel disconnected ("+channel.QueueName+")", amqpErr)
 
 	channel.connect()
 }
@@ -238,7 +238,7 @@ func (channel *Channel) Consume() {
 
 		if !channel.isReady() {
 
-			logInfo("Can't consume when channel is nil/closed")
+			channel.connection.logInfo("Can't consume when channel is nil/closed")
 
 			<-time.NewTimer(time.Second * 5).C
 
@@ -247,7 +247,7 @@ func (channel *Channel) Consume() {
 
 		msgs, err := channel.channel.Consume(string(channel.QueueName), channel.ConsumerName, false, false, false, false, nil)
 		if err != nil {
-			logError("Getting Rabbit channel chan", err)
+			channel.connection.logError("Getting Rabbit channel chan", err)
 			continue
 		}
 

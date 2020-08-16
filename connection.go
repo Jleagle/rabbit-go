@@ -1,6 +1,7 @@
 package rabbit
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -21,6 +22,12 @@ func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connec
 		dial:     dial,
 		config:   config,
 		connType: conType,
+		logInfo: func(i ...interface{}) {
+			fmt.Println(i...)
+		},
+		logError: func(i ...interface{}) {
+			fmt.Println(i...)
+		},
 	}
 
 	connection.connect()
@@ -29,7 +36,7 @@ func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connec
 		for {
 			amqpErr := <-connection.closeChan
 			connection.connection = nil
-			logError("Rabbit connection disconnected", amqpErr)
+			connection.logError("Rabbit connection disconnected", amqpErr)
 			connection.connect()
 		}
 	}()
@@ -43,6 +50,8 @@ type Connection struct {
 	config     amqp.Config
 	closeChan  chan *amqp.Error
 	connType   ConnType
+	logInfo    func(...interface{})
+	logError   func(...interface{})
 	sync.Mutex
 }
 
@@ -60,7 +69,7 @@ func (connection *Connection) connect() {
 		return
 	}
 
-	logInfo("Creating Rabbit connection (" + connection.connType + ")")
+	connection.logInfo("Creating Rabbit connection (" + connection.connType + ")")
 
 	operation := func() (err error) {
 
@@ -82,10 +91,10 @@ func (connection *Connection) connect() {
 	policy.MaxInterval = time.Minute * 5
 	policy.MaxElapsedTime = 0
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { logWarning("Trying to connect to Rabbit", err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { connection.logInfo("Trying to connect to Rabbit", err) })
 	if err != nil {
-		logError(err)
+		connection.logError(err)
 	} else {
-		logInfo("Rabbit conn connected (" + connection.connType + ")")
+		connection.logInfo("Rabbit conn connected (" + connection.connType + ")")
 	}
 }

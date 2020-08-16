@@ -26,7 +26,7 @@ func (message *Message) Ack(multiple ...bool) {
 
 	err := message.Message.Ack(len(multiple) > 0 && multiple[0])
 	if err != nil {
-		logError(err)
+		message.Channel.connection.logError(err)
 	} else {
 		message.ActionTaken = true
 	}
@@ -43,7 +43,7 @@ func (message *Message) Nack(multiple bool, requeue bool) {
 
 	err := message.Message.Nack(multiple, requeue)
 	if err != nil {
-		logError(err)
+		message.Channel.connection.logError(err)
 	} else {
 		message.ActionTaken = true
 	}
