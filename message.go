@@ -138,3 +138,13 @@ func (message *Message) LastQueue() (i QueueName) {
 	}
 	return i
 }
+
+func (message *Message) UUID() string {
+
+	if val, ok := message.Message.Headers[headerUUID]; ok {
+		if val2, ok2 := val.(string); ok2 {
+			return val2
+		}
+	}
+	return ""
+}
