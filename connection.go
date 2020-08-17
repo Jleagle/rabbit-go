@@ -16,18 +16,34 @@ const (
 	Producer ConnType = "producer"
 )
 
-func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connection, err error) {
+type ConnectionConfig struct {
+	address  string
+	connType ConnType
+	config   amqp.Config
+	logInfo  func(i ...interface{})
+	logError func(i ...interface{})
+}
+
+func NewConnection(config ConnectionConfig) (c *Connection, err error) {
+
+	if config.logInfo == nil {
+		config.logInfo = func(i ...interface{}) {
+			fmt.Println(i...)
+		}
+	}
+
+	if config.logError == nil {
+		config.logError = func(i ...interface{}) {
+			fmt.Println(i...)
+		}
+	}
 
 	connection := &Connection{
-		dial:     dial,
-		config:   config,
-		connType: conType,
-		logInfo: func(i ...interface{}) {
-			fmt.Println(i...)
-		},
-		logError: func(i ...interface{}) {
-			fmt.Println(i...)
-		},
+		dial:     config.address,
+		config:   config.config,
+		connType: config.connType,
+		logInfo:  config.logInfo,
+		logError: config.logError,
 	}
 
 	connection.connect()
@@ -53,14 +69,6 @@ type Connection struct {
 	logInfo    func(...interface{})
 	logError   func(...interface{})
 	sync.Mutex
-}
-
-func (connection *Connection) SetInfoLogger(f func(i ...interface{})) {
-	connection.logInfo = f
-}
-
-func (connection *Connection) SetErrorLogger(f func(i ...interface{})) {
-	connection.logError = f
 }
 
 func (connection *Connection) isReady() bool {
