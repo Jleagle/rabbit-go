@@ -17,33 +17,33 @@ const (
 )
 
 type ConnectionConfig struct {
-	address  string
-	connType ConnType
-	config   amqp.Config
-	logInfo  func(i ...interface{})
-	logError func(i ...interface{})
+	Address  string
+	ConnType ConnType
+	Config   amqp.Config
+	LogInfo  func(i ...interface{})
+	LogError func(i ...interface{})
 }
 
 func NewConnection(config ConnectionConfig) (c *Connection, err error) {
 
-	if config.logInfo == nil {
-		config.logInfo = func(i ...interface{}) {
+	if config.LogInfo == nil {
+		config.LogInfo = func(i ...interface{}) {
 			fmt.Println(i...)
 		}
 	}
 
-	if config.logError == nil {
-		config.logError = func(i ...interface{}) {
+	if config.LogError == nil {
+		config.LogError = func(i ...interface{}) {
 			fmt.Println(i...)
 		}
 	}
 
 	connection := &Connection{
-		dial:     config.address,
-		config:   config.config,
-		connType: config.connType,
-		logInfo:  config.logInfo,
-		logError: config.logError,
+		dial:     config.Address,
+		config:   config.Config,
+		connType: config.ConnType,
+		logInfo:  config.LogInfo,
+		logError: config.LogError,
 	}
 
 	connection.connect()
