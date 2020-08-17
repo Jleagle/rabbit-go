@@ -56,8 +56,15 @@ type Connection struct {
 }
 
 func (connection *Connection) isReady() bool {
-
 	return connection.connection != nil && !connection.connection.IsClosed()
+}
+
+func (connection *Connection) setInfoLogger(f func(i ...interface{})) {
+	connection.logInfo = f
+}
+
+func (connection *Connection) setErrorLogger(f func(i ...interface{})) {
+	connection.logError = f
 }
 
 func (connection *Connection) connect() {
