@@ -24,25 +24,51 @@ func TestConnection(t *testing.T) {
 	var err error
 
 	// Producer
-	producerConnection, err := NewConnection(localDSN, Producer, amqp.Config{})
+	connectionConsumerConfig := ConnectionConfig{
+		Address:  localDSN,
+		ConnType: Producer,
+	}
+
+	producerConnection, err := NewConnection(connectionConsumerConfig)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	producerChannel, err = NewChannel(producerConnection, queueName, consumerName, 1, nil, true)
+	channelProducerConfig := ChannelConfig{
+		Connection:    producerConnection,
+		QueueName:     queueName,
+		ConsumerName:  consumerName,
+		PrefetchCount: 1,
+		UpdateHeaders: true,
+	}
+
+	producerChannel, err = NewChannel(channelProducerConfig)
 	if err != nil {
 		t.Error(queueName, err)
 	}
 
 	// Consumer
-	consumerConnection, err := NewConnection(localDSN, Consumer, amqp.Config{})
+	connectionProducerConfig := ConnectionConfig{
+		Address:  localDSN,
+		ConnType: Consumer,
+	}
+
+	consumerConnection, err := NewConnection(connectionProducerConfig)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	consumerChannel, err = NewChannel(consumerConnection, queueName, consumerName, 1, handler, false)
+	channelConsumerConfig := ChannelConfig{
+		Connection:    consumerConnection,
+		QueueName:     queueName,
+		ConsumerName:  consumerName,
+		PrefetchCount: 1,
+		Handler:       handler,
+	}
+
+	consumerChannel, err = NewChannel(channelConsumerConfig)
 	if err != nil {
 		t.Error(queueName, err)
 	}

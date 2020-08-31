@@ -16,21 +16,32 @@ type (
 	Handler   func(message *Message)
 )
 
-func NewChannel(connection *Connection, queueName QueueName, consumerName string, prefetchCount int, handler Handler, updateHeaders bool) (c *Channel, err error) {
+type ChannelConfig struct {
+	Connection    *Connection
+	QueueName     QueueName
+	ConsumerName  string
+	PrefetchCount int
+	Handler       Handler
+	UpdateHeaders bool
+	AutoDelete    bool
+}
+
+func NewChannel(config ChannelConfig) (c *Channel, err error) {
 
 	channel := &Channel{
-		connection:    connection,
-		QueueName:     queueName,
-		ConsumerName:  consumerName,
-		prefetchCount: prefetchCount,
-		handler:       handler,
-		updateHeaders: updateHeaders,
+		connection:    config.Connection,
+		QueueName:     config.QueueName,
+		ConsumerName:  config.ConsumerName,
+		prefetchCount: config.PrefetchCount,
+		handler:       config.Handler,
+		updateHeaders: config.UpdateHeaders,
+		autoDelete:    config.AutoDelete,
 	}
 
 	channel.connect()
 
 	// For producer channels
-	if connection.connType == Producer {
+	if config.Connection.connType == Producer {
 		go func() {
 			for {
 				amqpErr := <-channel.closeChan
@@ -52,6 +63,7 @@ type Channel struct {
 	isOpen        bool
 	prefetchCount int
 	updateHeaders bool
+	autoDelete    bool
 	connectLock   sync.Mutex
 }
 
@@ -96,7 +108,7 @@ func (channel *Channel) connect() {
 		channel.channel = c
 
 		// Queue
-		_, err = channel.channel.QueueDeclare(string(channel.QueueName), true, false, false, false, nil)
+		_, err = channel.channel.QueueDeclare(string(channel.QueueName), true, channel.autoDelete, false, false, nil)
 		if err != nil {
 			return err
 		}
