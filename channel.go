@@ -24,6 +24,7 @@ type ChannelConfig struct {
 	Handler       Handler
 	UpdateHeaders bool
 	AutoDelete    bool
+	QueueArgs     amqp.Table
 }
 
 func NewChannel(config ChannelConfig) (c *Channel, err error) {
@@ -36,6 +37,7 @@ func NewChannel(config ChannelConfig) (c *Channel, err error) {
 		handler:       config.Handler,
 		updateHeaders: config.UpdateHeaders,
 		autoDelete:    config.AutoDelete,
+		queueArgs:     config.QueueArgs,
 	}
 
 	channel.connect()
@@ -64,6 +66,7 @@ type Channel struct {
 	prefetchCount int
 	updateHeaders bool
 	autoDelete    bool
+	queueArgs     amqp.Table
 	connectLock   sync.Mutex
 }
 
@@ -108,7 +111,7 @@ func (channel *Channel) connect() {
 		channel.channel = c
 
 		// Queue
-		_, err = channel.channel.QueueDeclare(string(channel.QueueName), true, channel.autoDelete, false, false, nil)
+		_, err = channel.channel.QueueDeclare(string(channel.QueueName), true, channel.autoDelete, false, false, channel.queueArgs)
 		if err != nil {
 			return err
 		}
